@@ -47,7 +47,7 @@ export const claim = async (req, res) => {
         fromWallet.publicKey,
         Math.round(100000*user.bonkPoints)
         // 500000000
-    // );
+    );
 
     user.bonkPoints = 0;
     user.save();
