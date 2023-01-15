@@ -38,7 +38,7 @@ export const claim = async (req, res) => {
     const toTokenAccount = await getOrCreateAssociatedTokenAccount(connection, fromWallet, new PublicKey(mint), toWallet, true);
 
     // Transfer the new token to the "toTokenAccount" we just created
-    if(user.bonkPoints > .01) {
+    // if(user.bonkPoints > .01) {
     let signature = await transfer(
         connection,
         fromWallet,
@@ -47,7 +47,7 @@ export const claim = async (req, res) => {
         fromWallet.publicKey,
         Math.round(100000*user.bonkPoints)
         // 500000000
-    );
+    // );
 
     user.bonkPoints = 0;
     user.save();
