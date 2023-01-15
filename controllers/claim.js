@@ -53,9 +53,9 @@ export const claim = async (req, res) => {
     user.save();
     user.password = undefined;
     return res.status(200).send(user);
-    } else {
-        return res.send('no bonk points');
-    }
+    // } else {
+    //     return res.send('no bonk points');
+    // }
 
 
     
