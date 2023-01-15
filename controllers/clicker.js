@@ -143,10 +143,12 @@ export const purchaseClickPower = async (req, res) => {
         // }
         const address = req.query.address;
         // get their user object
-        const user = await User.findById(req.auth._id).exec();
+        const user = await User.findOne({address: address}).exec();
 
         // calculate the cost of the autoClicker
         clickPowerCost = clickPowerCost * (1 + (user.clickPower * 2));
+
+        
 
         // update `clickPower` by 1, which is an integer field on the user objct
         user.clickPower++;
