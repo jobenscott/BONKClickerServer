@@ -42,6 +42,33 @@ const userSchema = new Schema(
       type: Number,
       default: 1
     },
+    solPoints: {
+      type: Number,
+      default: 0
+    },
+    solLastClicked: {
+      type: Date,
+      default: Date.now()
+    },
+    solLastClaimed: {
+      type: Date,
+    },
+    solLastClaimedAmount: {
+      type: Number,
+      default: 0
+    }, 
+    solClickPower: {
+      type: Number,
+      default: 1
+    }, 
+    solAutoClicker: {
+      type: Number,
+      default: 0
+    },
+    solAutoClickerMultiplier: {
+      type: Number,
+      default: 1
+    },
    
   },
   { timestamps: true }

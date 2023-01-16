@@ -29,10 +29,10 @@ app.use(morgan("dev"));
 // route
 readdirSync("./routes").map((r) => app.use("/api", require(`./routes/${r}`)));
 // csrf
-// app.use(csrfProtection);
+// app.use(csrfProtection);git
 
 app.get("/api/csrf-token", (req, res) => {
-  res.json({ csrfToken: req.csrfToken() });
+  res.json({ csrfToken: "notathingrightnow" });
 });
 
 // port
