@@ -42,16 +42,20 @@ export const solClaim = async (req, res) => {
         }),
     );
 
+    try {
+        let signature = await sendAndConfirmTransaction(connection, transaction, [fromWallet]);
+        if(signature) {
+            user.solPoints = 0;
+            user.save();
+            user.password = undefined;
+            return res.status(200).send(user);
+        }
+    } catch (error) {
+        user.password = undefined;
+        return res.send(user);
+    }
+   
 
-    sendAndConfirmTransaction(connection, transaction, [fromWallet]);
-
-    user.solPoints = 0;
-    user.save();
-    user.password = undefined;
-    return res.status(200).send(user);
-    // } else {
-    //     return res.send('no bonk points');
-    // }
 
 
 
