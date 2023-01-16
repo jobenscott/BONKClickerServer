@@ -2,7 +2,7 @@ import User from "../models/user";
 
 
 const starting_reward = .00001;
-const starting_cost = .001;
+const starting_cost = .0001;
 
 export const solManualClick = async (req, res) => {
     try {
