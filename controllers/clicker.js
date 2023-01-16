@@ -39,10 +39,10 @@ export const manualClick = async (req, res) => {
         // // and update `bonkPoints`, which is an integer field on the user object, by taking the intial value and adding (1 * `clickPower`) to it
         console.log(auto_amount);
         if (user.autoClicker > 0) {
-            user.bonkPoints += ((.001 * (1 + (clickPower * 0.05))) + auto_amount);
+            user.bonkPoints += ((1 * (1 + (clickPower * 0.05))) + auto_amount);
         } else {
             // var milliSeconds = Date.parse();
-            user.bonkPoints += ((.001 * (1 + (clickPower * 0.05))));
+            user.bonkPoints += ((1 * (1 + (clickPower * 0.05))));
         }
 
 
@@ -64,7 +64,7 @@ export const manualClick = async (req, res) => {
 };
 
 export const purchaseAutoClicker = async (req, res) => {
-    let autoClickerCost = .01;
+    let autoClickerCost = 1;
     try {
         // make sure they're logged in
         // if (!req.auth._id) {
@@ -103,7 +103,7 @@ export const purchaseAutoClicker = async (req, res) => {
 };
 
 export const purchaseAutoClickerMultiplier = async (req, res) => {
-    let autoClickerMultiplierCost = .01;
+    let autoClickerMultiplierCost = 1;
     try {
         // make sure they're logged in
         // if (!req.auth._id) {
@@ -111,15 +111,18 @@ export const purchaseAutoClickerMultiplier = async (req, res) => {
         // }
         const address = req.query.address;
         // get their user object
-        const user = await User.findById(req.auth._id).exec();
+        const user = await User.findOne({address: address}).exec();
 
         // calculate the cost of the autoClicker
-        autoClickerMultiplierCost = autoClickerMultiplierCost * (1 + (user.autoClickerMultiplierCount * 1.5));
+        autoClickerMultiplierCost = autoClickerMultiplierCost * (1 + (user.autoClickerMultiplier * 1.5));
 
         // update `autoClickerMultiplierCount` by 1, which is an integer field on the user objct
-        user.autoClickerMultiplierCount++;
-
+        user.autoClickerMultiplier++;
+        // if(user.bonkPoints - autoClickerMultiplierCost > 0) {
         user.bonkPoints -= autoClickerMultiplierCost;
+        // } else {
+            // user.bonkPoints
+        // }
 
         // save the user object
         await user.save();
@@ -135,7 +138,7 @@ export const purchaseAutoClickerMultiplier = async (req, res) => {
 };
 
 export const purchaseClickPower = async (req, res) => {
-    let clickPowerCost = .01;
+    let clickPowerCost = 1;
     try {
         // make sure they're logged in
         // if (!req.auth._id) {
