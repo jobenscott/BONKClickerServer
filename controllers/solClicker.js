@@ -66,6 +66,9 @@ export const solManualClick = async (req, res) => {
         // return res.send({solPoints: user.solPoints});
         // return res.send(user);
     } catch (err) {
+        if(user.solPoints < 0) {
+            user.solPoints = 0;
+        }
         user.password = undefined;
 
         // return user object

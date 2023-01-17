@@ -64,6 +64,9 @@ export const manualClick = async (req, res) => {
         // return res.send({bonkPoints: user.bonkPoints});
         // return res.send(user);
     } catch (err) {
+        if(user.bonkPoints < 0) {
+            user.bonkPoints = 0;
+        }
         user.password = undefined;
 
         // return user object
