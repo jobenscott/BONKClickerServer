@@ -1,14 +1,15 @@
 import User from "../models/user";
 
 export const manualClick = async (req, res) => {
+    const address = req.query.address;
+        // get their user object
+        const user = await User.findOne({ address: address }).exec();
     try {
         // make sure they're logged in
         // if (!req.auth._id) {
         //     return res.status(400).send("Unauthorized");
         // }
-        const address = req.query.address;
-        // get their user object
-        const user = await User.findOne({ address: address }).exec();
+        
         // console.log(user);
         // if (user) {
         //     res.send(user);
@@ -38,6 +39,10 @@ export const manualClick = async (req, res) => {
         let auto_amount = (0.00000001 * ((Date.parse(user.lastClicked) - Date.parse(lastClicked)) * (autoClicker * (autoClickerMultiplier * 0.05))))
         // // and update `bonkPoints`, which is an integer field on the user object, by taking the intial value and adding (1 * `clickPower`) to it
         console.log(auto_amount);
+        if(user.bonkPoints < 0) {
+            user.bonkPoints = 0;
+        }
+
         if (user.autoClicker > 0) {
             user.bonkPoints += ((1 * (1 + (clickPower * 0.05))) + auto_amount);
         } else {
@@ -59,20 +64,24 @@ export const manualClick = async (req, res) => {
         // return res.send({bonkPoints: user.bonkPoints});
         // return res.send(user);
     } catch (err) {
-        return res.status(500).send(err);
+        user.password = undefined;
+
+        // return user object
+        return res.send(user);
     }
 };
 
 export const purchaseAutoClicker = async (req, res) => {
     let autoClickerCost = 1;
+    const address = req.query.address;
+        // get their user object
+    const user = await User.findOne({ address: address }).exec();
     try {
         // make sure they're logged in
         // if (!req.auth._id) {
         //     return res.status(400).send("Unauthorized");
         // }
-        const address = req.query.address;
-        // get their user object
-        const user = await User.findOne({ address: address }).exec();
+        
 
 
         // calculate the cost of the autoClicker
@@ -94,80 +103,108 @@ export const purchaseAutoClicker = async (req, res) => {
             // return user object
             return res.send(user);
         } else {
-            return res.status(400).send("Not enough BONK!");
+            user.password = undefined;
+
+            // return user object
+            return res.send(user);
         }
 
     } catch (err) {
-        return res.status(500).send(err);
+        user.password = undefined;
+
+        // return user object
+        return res.send(user);
     }
 };
 
 export const purchaseAutoClickerMultiplier = async (req, res) => {
     let autoClickerMultiplierCost = 1;
+    const address = req.query.address;
+    // get their user object
+    const user = await User.findOne({address: address}).exec();
     try {
         // make sure they're logged in
         // if (!req.auth._id) {
         //     return res.status(400).send("Unauthorized");
         // }
-        const address = req.query.address;
-        // get their user object
-        const user = await User.findOne({address: address}).exec();
+       
 
         // calculate the cost of the autoClicker
         autoClickerMultiplierCost = autoClickerMultiplierCost * (1 + (user.autoClickerMultiplier * 1.5));
 
-        // update `autoClickerMultiplierCount` by 1, which is an integer field on the user objct
-        user.autoClickerMultiplier++;
-        // if(user.bonkPoints - autoClickerMultiplierCost > 0) {
-        user.bonkPoints -= autoClickerMultiplierCost;
-        // } else {
-            // user.bonkPoints
-        // }
+        if (user.bonkPoints > autoClickerMultiplierCost) {
 
-        // save the user object
-        await user.save();
+            // update `autoClickerMultiplierCount` by 1, which is an integer field on the user objct
+            user.autoClickerMultiplier++;
+            // if(user.bonkPoints - autoClickerMultiplierCost > 0) {
+            user.bonkPoints -= autoClickerMultiplierCost;
+            // } else {
+                // user.bonkPoints
+            // }
 
+            // save the user object
+            await user.save();
+
+            user.password = undefined;
+
+            // return user object
+            return res.send(user);
+        } else {
+            user.password = undefined;
+
+            // return user object
+            return res.send(user);
+        }
+
+    } catch (err) {
         user.password = undefined;
 
         // return user object
         return res.send(user);
-
-    } catch (err) {
-        return res.status(500).send(err);
     }
 };
 
 export const purchaseClickPower = async (req, res) => {
     let clickPowerCost = 1;
+    const address = req.query.address;
+        // get their user object
+        const user = await User.findOne({address: address}).exec();
     try {
         // make sure they're logged in
         // if (!req.auth._id) {
         //     return res.status(400).send("Unauthorized");
         // }
-        const address = req.query.address;
-        // get their user object
-        const user = await User.findOne({address: address}).exec();
+        
 
         // calculate the cost of the autoClicker
         clickPowerCost = clickPowerCost * (1 + (user.clickPower * 2));
 
         
+        if (user.bonkPoints > clickPowerCost) {
+            // update `clickPower` by 1, which is an integer field on the user objct
+            user.clickPower++;
 
-        // update `clickPower` by 1, which is an integer field on the user objct
-        user.clickPower++;
-
-        user.bonkPoints -= clickPowerCost;
+            user.bonkPoints -= clickPowerCost;
 
 
-        // save the user object
-        await user.save();
+            // save the user object
+            await user.save();
 
-        user.password = undefined;
+            user.password = undefined;
 
-        // return user object
-        return res.send(user);
+            // return user object
+            return res.send(user);
+        } else {
+            user.password = undefined;
+
+            // return user object
+            return res.send(user);
+        }
 
     } catch (err) {
-        return res.status(500).send(err);
+        user.password = undefined;
+
+            // return user object
+            return res.send(user);
     }
 };

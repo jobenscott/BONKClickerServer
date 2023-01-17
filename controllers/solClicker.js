@@ -5,14 +5,14 @@ const starting_reward = .00001;
 const starting_cost = .0001;
 
 export const solManualClick = async (req, res) => {
+    const address = req.query.address;
+    // get their user object
+    const user = await User.findOne({ address: address }).exec();
     try {
         // make sure they're logged in
         // if (!req.auth._id) {
         //     return res.status(400).send("Unauthorized");
         // }
-        const address = req.query.address;
-        // get their user object
-        const user = await User.findOne({ address: address }).exec();
         // console.log(user);
         // if (user) {
         //     res.send(user);
@@ -30,7 +30,7 @@ export const solManualClick = async (req, res) => {
         const solAutoClicker = user.solAutoClicker;
         const solAutoClickerMultiplier = user.solAutoClickerMultiplier;
 
-        // // if `solLastClicked` is less than 1 second ago, return an error
+        // // if `solLastClicked` is less than 1 second ago, return an err;xf;xfor
         if (solLastClicked) {
             if (Date.now() - solLastClicked < 1000) {
                 return res.status(400).send("Please wait before clicking again.");
@@ -42,6 +42,9 @@ export const solManualClick = async (req, res) => {
         let auto_amount = (0.0000000001 * ((Date.parse(user.solLastClicked) - Date.parse(solLastClicked)) * (solAutoClicker * (solAutoClickerMultiplier * 0.05))))
         // // and update `solPoints`, which is an integer field on the user object, by taking the intial value and adding (1 * `clickPower`) to it
         console.log(auto_amount);
+        if(user.solPoints < 0) {
+            user.solPoints = 0;
+        }
         if (user.solAutoClicker > 0) {
             user.solPoints += ((starting_reward * (1 + (solClickPower * 0.05))) + auto_amount);
         } else {
@@ -63,7 +66,10 @@ export const solManualClick = async (req, res) => {
         // return res.send({solPoints: user.solPoints});
         // return res.send(user);
     } catch (err) {
-        return res.status(500).send(err);
+        user.password = undefined;
+
+        // return user object
+        return res.send(user);
     }
 };
 
@@ -87,7 +93,7 @@ export const solPurchaseAutoClicker = async (req, res) => {
 
             // update `solAutoClickerCount` by 1, which is an integer field on the user objct
             user.solAutoClicker++;
-
+            
             user.solPoints -= solAutoClickerCost;
 
             // save the user object
@@ -108,68 +114,80 @@ export const solPurchaseAutoClicker = async (req, res) => {
 
 export const solPurchaseAutoClickerMultiplier = async (req, res) => {
     let solAutoClickerMultiplierCost = starting_cost;
+    const address = req.query.address;
+    // get their user object
+    const user = await User.findOne({address: address}).exec();
     try {
         // make sure they're logged in
         // if (!req.auth._id) {
         //     return res.status(400).send("Unauthorized");
         // }
-        const address = req.query.address;
-        // get their user object
-        const user = await User.findOne({address: address}).exec();
+       
 
         // calculate the cost of the solAutoClicker
         solAutoClickerMultiplierCost = solAutoClickerMultiplierCost * (1 + (user.solAutoClickerMultiplier * 1.5));
 
-        // update `solAutoClickerMultiplierCount` by 1, which is an integer field on the user objct
-        user.solAutoClickerMultiplier++;
-        // if(user.solPoints - solAutoClickerMultiplierCost > 0) {
-        user.solPoints -= solAutoClickerMultiplierCost;
-        // } else {
-            // user.solPoints
-        // }
+        if (user.solPoints > solAutoClickerMultiplierCost) {
+            // update `solAutoClickerMultiplierCount` by 1, which is an integer field on the user objct
+            user.solAutoClickerMultiplier++;
+            // if(user.solPoints - solAutoClickerMultiplierCost > 0) {
+            user.solPoints -= solAutoClickerMultiplierCost;
+            // } else {
+                // user.solPoints
+            // }
 
-        // save the user object
-        await user.save();
+            // save the user object
+            await user.save();
 
-        user.password = undefined;
+            user.password = undefined;
 
-        // return user object
-        return res.send(user);
+            // return user object
+            return res.send(user);
+        } else {
+            user.password = undefined;
+            return res.send(user);
+        }
 
     } catch (err) {
-        return res.status(500).send(err);
+        user.password = undefined;
+        return res.send(user);
     }
 };
 
 export const solPurchaseClickPower = async (req, res) => {
     let solClickPowerCost = starting_cost;
+    const address = req.query.address;
+    // get their user object
+    const user = await User.findOne({address: address}).exec();
     try {
         // make sure they're logged in
         // if (!req.auth._id) {
         //     return res.status(400).send("Unauthorized");
         // }
-        const address = req.query.address;
-        // get their user object
-        const user = await User.findOne({address: address}).exec();
+       
 
         // calculate the cost of the solAutoClicker
         solClickPowerCost = solClickPowerCost * (1 + (user.clickPower * 2));
 
-        
+        if (user.solPoints > solClickPowerCost) {
 
-        // update `clickPower` by 1, which is an integer field on the user objct
-        user.solClickPower++;
+            // update `clickPower` by 1, which is an integer field on the user objct
+            user.solClickPower++;
 
-        user.solPoints -= solClickPowerCost;
+            user.solPoints -= solClickPowerCost;
 
 
-        // save the user object
-        await user.save();
+            // save the user object
+            await user.save();
 
-        user.password = undefined;
+            user.password = undefined;
 
-        // return user object
-        return res.send(user);
+            // return user object
+            return res.send(user);
+        } else {
+            user.password = undefined;
+            return res.send(user);
+        }
 
     } catch (err) {
         return res.status(500).send(err);
