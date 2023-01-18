@@ -36,7 +36,7 @@ export const manualClick = async (req, res) => {
 
         // // otherwise, update `lastClicked` to the current time
         user.lastClicked = Date.now();
-        let auto_amount = (0.00000001 * ((Date.parse(user.lastClicked) - Date.parse(lastClicked)) * (autoClicker * (autoClickerMultiplier * 0.05))))
+        let auto_amount = (0.0001 * ((Date.parse(user.lastClicked) - Date.parse(lastClicked)) * (autoClicker * (autoClickerMultiplier * 0.05))))
         // // and update `bonkPoints`, which is an integer field on the user object, by taking the intial value and adding (1 * `clickPower`) to it
         console.log(auto_amount);
         if(user.bonkPoints < 0) {
@@ -44,10 +44,10 @@ export const manualClick = async (req, res) => {
         }
 
         if (user.autoClicker > 0) {
-            user.bonkPoints += ((1 * (1 + (clickPower * 0.05))) + auto_amount);
+            user.bonkPoints += ((10 * (1 + (clickPower * 0.05))) + auto_amount);
         } else {
             // var milliSeconds = Date.parse();
-            user.bonkPoints += ((1 * (1 + (clickPower * 0.05))));
+            user.bonkPoints += ((10 * (1 + (clickPower * 0.05))));
         }
 
 
@@ -75,7 +75,7 @@ export const manualClick = async (req, res) => {
 };
 
 export const purchaseAutoClicker = async (req, res) => {
-    let autoClickerCost = 1;
+    let autoClickerCost = 10;
     const address = req.query.address;
         // get their user object
     const user = await User.findOne({ address: address }).exec();
@@ -121,7 +121,7 @@ export const purchaseAutoClicker = async (req, res) => {
 };
 
 export const purchaseAutoClickerMultiplier = async (req, res) => {
-    let autoClickerMultiplierCost = 1;
+    let autoClickerMultiplierCost = 10;
     const address = req.query.address;
     // get their user object
     const user = await User.findOne({address: address}).exec();
@@ -168,7 +168,7 @@ export const purchaseAutoClickerMultiplier = async (req, res) => {
 };
 
 export const purchaseClickPower = async (req, res) => {
-    let clickPowerCost = 1;
+    let clickPowerCost = 10;
     const address = req.query.address;
         // get their user object
         const user = await User.findOne({address: address}).exec();
